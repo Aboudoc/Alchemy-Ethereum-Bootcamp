@@ -1,14 +1,17 @@
 const provider = require("./provider");
 
-async function getBalance(address) {
-  const response = await provider.send({
-    jsonrpc: "2.0",
-    id: 1,
-    method: "eth_getBalance", // <-- fill in the method
-    params: [address, "latest"], // <-- fill in the params
-  });
+async function getTotalBalance(addresses) {
+  const responses = await provider.send(
+    addresses.map((addr) => ({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_getBalance",
+      params: [addr, "latest"],
+    }))
+  );
 
-  return response.result;
+  // return the total balance of all the addresses
+  return responses.reduce((a, b) => a + parseInt(b.result), 0);
 }
 
-module.exports = getBalance;
+module.exports = getTotalBalance;
